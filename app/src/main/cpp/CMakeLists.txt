@@ -49,5 +49,7 @@ target_link_libraries(
         ${PROJECT_NAME}
         orbslam3
         android
-        ${log-lib})
+        ${log-lib}
+        ${CMAKE_DL_LIBS}
+)
 
