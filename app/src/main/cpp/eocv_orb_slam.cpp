@@ -1,24 +1,6 @@
 #include "orb-slam3/include/System.h"
 #include <jni.h>
 
-// Write C++ code here.
-//
-// Do not forget to dynamically load the C++ library into your application.
-//
-// For instance,
-//
-// In MainActivity.java:
-//    static {
-//       System.loadLibrary("eocv_orb_slam");
-//    }
-//
-// Or, in MainActivity.kt:
-//    companion object {
-//      init {
-//         System.loadLibrary("eocv_orb_slam")
-//      }
-//    }
-
 std::string ConvertJString(JNIEnv *env, jstring str) {
     if (!str) std::string();
 
@@ -50,5 +32,37 @@ Java_com_scarsdalerobotics_eocv_1orb_1slam_OrbSlamJniWrapper_releaseSlam(JNIEnv 
                                                                          jlong slam_pointer) {
 
     auto s = (ORB_SLAM3::System *) slam_pointer;
+    s->Shutdown();
     delete s;
+}
+
+extern "C"
+JNIEXPORT jfloatArray JNICALL
+Java_com_scarsdalerobotics_eocv_1orb_1slam_OrbSlamJniWrapper_track(JNIEnv *env, jclass clazz,
+                                                                   jlong slam_pointer, jfloat ax,
+                                                                   jfloat ay, jfloat az,
+                                                                   jfloat wx, jfloat wy, jfloat wz,
+                                                                   jfloat t) {
+    auto s = (ORB_SLAM3::System *) slam_pointer;
+
+    auto p = ORB_SLAM3::IMU::Point(ax, ay, az, wx, wy, wz, t);
+    std::vector<ORB_SLAM3::IMU::Point> v = {p};
+
+    Sophus::SE3f pose = s->TrackMonocular(cv::Mat(), t, v);
+
+    Eigen::Vector3f trans = pose.translation(); // x, y, z
+    Eigen::Vector3f rot = pose.unit_quaternion().toRotationMatrix().eulerAngles(0, 1, 2); // roll, pitch, yaw
+
+    // Create array
+    jfloatArray result;
+    result = env->NewFloatArray(6);
+    if (result == nullptr) {
+        return nullptr; /* out of memory error thrown */
+    }
+
+    jfloat fill[6] = {trans.x(), trans.y(), trans.z(), rot.x(), rot.y(), rot.z()};
+    // move from the temp structure to the java structure
+    env->SetFloatArrayRegion(result, 0, 6, fill);
+
+    return result;
 }
