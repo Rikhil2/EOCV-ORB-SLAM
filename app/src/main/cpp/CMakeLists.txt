@@ -1,4 +1,3 @@
-
 # For more information about using CMake with Android Studio, read the
 # documentation: https://d.android.com/studio/projects/add-native-code.html
 
@@ -10,40 +9,45 @@ cmake_minimum_required(VERSION 3.18.1)
 
 project("eocv_orb_slam")
 
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds them for you.
-# Gradle automatically packages shared libraries with your APK.
+set(OpenCV_DIR ${CMAKE_CURRENT_SOURCE_DIR}/opencv-4.6.0-android-sdk/OpenCV-android-sdk/sdk/native/jni)
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
+add_subdirectory(orb-slam3)
+include_directories(
+        .
+        orb-slam3
+        orb-slam3/include
+        orb-slam3/include/CameraModels
+        orb-slam3/Thirdparty
+        orb-slam3/Thirdparty/boost/include
+        orb-slam3/Thirdparty/eigen3/
+        orb-slam3/Thirdparty/eigen3/Eigen
+        orb-slam3/Thirdparty/eigen3/Eigen/src
+        orb-slam3/Thirdparty/openssl/include
+        orb-slam3/Thirdparty/Sophus
+)
+
 
 add_library( # Sets the name of the library.
-             eocv_orb_slam
+        eocv_orb_slam
 
-             # Sets the library as a shared library.
-             SHARED
+        # Sets the library as a shared library.
+        SHARED
 
-             # Provides a relative path to your source file(s).
-             eocv_orb_slam.cpp )
-
-# Searches for a specified prebuilt library and stores the path as a
-# variable. Because CMake includes system libraries in the search path by
-# default, you only need to specify the name of the public NDK library
-# you want to add. CMake verifies that the library exists before
-# completing its build.
+        # Provides a relative path to your source file(s).
+        eocv_orb_slam.cpp)
 
 find_library( # Sets the name of the path variable.
-              log-lib
+        log-lib
 
-              # Specifies the name of the NDK library that
-              # you want CMake to locate.
-              log )
+        # Specifies the name of the NDK library that
+        # you want CMake to locate.
+        log)
 
-# Specifies libraries CMake should link to your target library. You
-# can link multiple libraries, such as libraries you define in this
-# build script, prebuilt third-party libraries, or system libraries.
+target_link_libraries(
+        ${PROJECT_NAME}
+        orbslam3
+        android
+        ${log-lib})
 
-target_link_libraries( # Specifies the target library.
-                       eocv_orb_slam
-
-                       # Links the target library to the log library
-                       # included in the NDK.
-                       ${log-lib} )
