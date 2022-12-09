@@ -51,7 +51,8 @@ Java_com_scarsdalerobotics_eocv_1orb_1slam_OrbSlamJniWrapper_track(JNIEnv *env, 
     Sophus::SE3f pose = s->TrackMonocular(cv::Mat(), t, v);
 
     Eigen::Vector3f trans = pose.translation(); // x, y, z
-    Eigen::Vector3f rot = pose.unit_quaternion().toRotationMatrix().eulerAngles(0, 1, 2); // roll, pitch, yaw
+    Eigen::Vector3f rot = pose.unit_quaternion().toRotationMatrix().eulerAngles(0, 1,
+                                                                                2); // roll, pitch, yaw
 
     // Create array
     jfloatArray result;

@@ -9,9 +9,17 @@ cmake_minimum_required(VERSION 3.18.1)
 
 project("eocv_orb_slam")
 
-set(OpenCV_DIR ${CMAKE_CURRENT_SOURCE_DIR}/opencv-4.6.0-android-sdk/OpenCV-android-sdk/sdk/native/jni)
-find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
+# OpenCV Repackaged
+set(OPENCV_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../OpenCV-Repackaged/doc/native_headers/)
+include_directories(${OPENCV_INCLUDE_DIRS})
+
+# Specify path to prebuilt object
+set(OPENCV_NATIVE_LIB_PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../OpenCV-Repackaged/doc/native_libs)
+
+add_library(openCvNative SHARED IMPORTED)
+set_target_properties(openCvNative PROPERTIES IMPORTED_LOCATION
+        ${OPENCV_NATIVE_LIB_PARENT_DIR}/${ANDROID_ABI}/libOpenCvAndroid453.so)
+set(OPENCV_LIBS openCvNative)
 
 add_subdirectory(orb-slam3)
 include_directories(
@@ -51,5 +59,6 @@ target_link_libraries(
         android
         ${log-lib}
         ${CMAKE_DL_LIBS}
+        openCvNative
 )
 

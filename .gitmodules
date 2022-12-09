@@ -1,0 +1,3 @@
+[submodule "app/src/main/OpenCV-Repackaged"]
+	path = app/src/main/OpenCV-Repackaged
+	url = https://github.com/OpenFTC/OpenCV-Repackaged.git
