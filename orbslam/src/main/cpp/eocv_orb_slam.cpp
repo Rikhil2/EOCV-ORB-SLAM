@@ -39,16 +39,18 @@ Java_com_scarsdalerobotics_eocv_1orb_1slam_OrbSlamJniWrapper_releaseSlam(JNIEnv 
 extern "C"
 JNIEXPORT jfloatArray JNICALL
 Java_com_scarsdalerobotics_eocv_1orb_1slam_OrbSlamJniWrapper_track(JNIEnv *env, jclass clazz,
-                                                                   jlong slam_pointer, jfloat ax,
+                                                                   jlong slam_pointer,
+                                                                   jlong mat_pointer, jfloat ax,
                                                                    jfloat ay, jfloat az,
                                                                    jfloat wx, jfloat wy, jfloat wz,
                                                                    jfloat t) {
     auto s = (ORB_SLAM3::System *) slam_pointer;
+    auto mat = (cv::Mat *) mat_pointer;
 
     auto p = ORB_SLAM3::IMU::Point(ax, ay, az, wx, wy, wz, t);
     std::vector<ORB_SLAM3::IMU::Point> v = {p};
 
-    Sophus::SE3f pose = s->TrackMonocular(cv::Mat(), t, v);
+    Sophus::SE3f pose = s->TrackMonocular(*mat, t, v);
 
     Eigen::Vector3f trans = pose.translation(); // x, y, z
     Eigen::Vector3f rot = pose.unit_quaternion().toRotationMatrix().eulerAngles(0, 1,

@@ -6,9 +6,9 @@ public class OrbSlamJniWrapper {
     }
 
     // TODO: Optimize by passing in float array to fill
-    private static native float[] track(long slamPointer, float ax, float ay, float az, float wx, float wy, float wz, float t);
+    public static native float[] track(long slamPointer, long matPointer, float ax, float ay, float az, float wx, float wy, float wz, float t);
 
-    private static native long createSlam(String vocabularyFile, String settingsFile);
+    public static native long createSlam(String vocabularyFile, String settingsFile);
 
-    private static native void releaseSlam(long slamPointer);
+    public static native void releaseSlam(long slamPointer);
 }
