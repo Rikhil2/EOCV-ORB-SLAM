@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "EOCV-ORB-SLAM"
-include ':app'
+include ':orbslam'
